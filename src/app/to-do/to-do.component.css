@@ -1,0 +1,30 @@
+.form {
+  display: block;
+  width: fit-content;
+  text-align: left center;
+}
+
+div {
+  margin-bottom: 10px ;
+}
+
+.example-full-width {
+  width: 100%;
+}
+
+.tasks {
+  width:100%;
+  display: block;
+  padding: 25px;
+}
+
+span {
+  text-align: center;
+  vertical-align: text-top;
+  display: inline-block;
+  width:45%;
+  border: 2px solid black;
+}
+table {
+  width: 100%;
+}

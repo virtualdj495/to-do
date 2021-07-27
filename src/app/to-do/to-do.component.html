@@ -1,0 +1,32 @@
+<div>
+  <button (click)="openDialog()" mat-stroked-button>Add task</button>
+</div>
+<div>
+  <button (click)="clearMemory()" mat-stroked-button>Clear local memory</button>
+</div>
+<div>
+  <table mat-table matSort  [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" routerLink="/tasks-list/{{task.id}}" *matCellDef="let task"> {{task.name}} </td>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <th mat-header-cell mat-sort-header *matHeaderCellDef> Date </th>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" *matCellDef="let task"> {{task.endDate }} </td>
+    </ng-container>
+    <ng-container matColumnDef="edit">
+      <th mat-header-cell *matHeaderCellDef> Edit</th>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" *matCellDef="let task"><button  (click) = "editTask(task.id)" mat-stroked-button>Edit</button></td>
+    </ng-container>
+    <ng-container matColumnDef="checkbox">
+      <th mat-header-cell *matHeaderCellDef> Check</th>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" *matCellDef="let task"><mat-checkbox  (click) = "switchTask(task)" ></mat-checkbox></td>
+    </ng-container>
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef> Delete </th>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" *matCellDef="let task"><button *ngIf="task.state === false" (click)="deleteTask(task)" mat-stroked-button>Delete</button> </td>
+    </ng-container>
+    <tr mat-header-row  *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row  *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

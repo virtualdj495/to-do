@@ -1,0 +1,39 @@
+<div>
+  <mat-stepper linear #stepper>
+    <mat-step [stepControl]="taskForm1">
+      <form [formGroup]="taskForm1">
+        <mat-form-field style="margin-right: 3em">
+          <mat-label>Task Name</mat-label>
+          <input formControlName="name" matInput>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Date</mat-label>
+          <input formControlName="endDate" matInput [matDatepicker]="picker">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </form>
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </mat-step>
+    <mat-step [stepControl]="taskForm2">
+      <form [formGroup]="taskForm2">
+        <mat-form-field style="margin-right: 3em">
+          <mat-label>Email</mat-label>
+          <input formControlName="email" matInput>
+        </mat-form-field><br>
+        <mat-form-field style="width: 100%;">
+          <mat-label>Details</mat-label>
+          <textarea formControlName="task" matInput></textarea>
+        </mat-form-field>
+
+      </form>
+      <div>
+        <button mat-button matStepperPrevious type="button">Back</button>
+        <button mat-button matStepperNext type="button" [disabled]="!taskForm2.valid" (click)="save()">Submit</button>
+      </div>
+    </mat-step>
+
+  </mat-stepper>
+</div>

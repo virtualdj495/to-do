@@ -1,0 +1,8 @@
+<div *ngIf="currentTask">
+  <mat-card [ngStyle]="{'background-color': addColor(currentTask)}">
+    <mat-card-title>{{currentTask.name}} </mat-card-title>
+    <mat-card-subtitle>{{currentTask.endDate}} </mat-card-subtitle>
+    <mat-card-content>{{currentTask.task}} </mat-card-content>
+  </mat-card>
+</div>
+<button routerLink="/tasks-list" mat-raised-button>Back</button>
