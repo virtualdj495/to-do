@@ -1,0 +1,20 @@
+<div style="text-align: center;">
+  <form [formGroup]="userDetails">
+    <mat-form-field appearance="fill">
+      <mat-label>username</mat-label>
+      <input formControlName="username" matInput>
+    </mat-form-field>
+    <br>
+    <mat-form-field appearance="fill">
+      <mat-label>password</mat-label>
+      <input formControlName="password" matInput>
+    </mat-form-field>
+    <br>
+    <button style="margin-right: 20px;"  [disabled]="!userDetails.valid" (click)="onLogin()" mat-raised-button>Login</button>
+    <button [disabled]="!userDetails.valid" (click)="onRegister()" mat-raised-button>Register</button>
+  </form>
+  <br>
+  <p *ngIf="errorMessage === 'noUser'">Username not found!</p>
+  <p *ngIf="errorMessage === 'noPass'">Wrong password!</p>
+  <p *ngIf="errorMessage === 'exist'">Username already exists</p>
+</div>
