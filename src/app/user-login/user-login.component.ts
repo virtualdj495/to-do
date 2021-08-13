@@ -12,8 +12,8 @@ import { ObjectivesService } from '../objectives.service';
 })
 export class UserLoginComponent implements OnInit {
 
-  private addedUser: User = {id: -2 , username: '' , password: ''};
-  errorMessage: string = '';
+  private addedUser: User = {id: '' , username: '' , password: ''};
+  errors: Array<string> = [];
 
   constructor(
     private fb: FormBuilder,
@@ -34,21 +34,37 @@ export class UserLoginComponent implements OnInit {
     this.addedUser.username = this.userDetails.get('username')!.value;
     this.addedUser.password = this.userDetails.get('password')!.value;
     this.http.post(`http://localhost:3000/users`,this.addedUser).subscribe(
-      data => this.errorMessage = data.toString()
+      (data: any ) => {
+        this.errors = [];
+        if (typeof data === 'object') {
+          for ( let error of data.errors) {
+            this.errors.push(error.msg);
+          }
+        }
+      }
     );
     this.userDetails.setValue({username: '', password: ''});
-    this.addedUser = {id: -2 , username: '' , password: ''};
+    this.addedUser = {id: '' , username: '' , password: ''};
   }
 
   onLogin(): void {
     this.addedUser.username = this.userDetails.get('username')!.value;
     this.addedUser.password = this.userDetails.get('password')!.value;
     this.http.post(`http://localhost:3000/loggedUser`, this.addedUser).subscribe(
-      data => {
-        this.errorMessage = this.services.setState(data.toString());
-        this.userDetails.setValue({username: '', password: ''});
-        this.router.navigateByUrl('/tasks-list');
-      }
-    )
+      (data: any) => {
+        this.errors = [];
+        if(typeof data == 'string') {
+          this.services.setState(<string> data);
+          this.userDetails.setValue({username: '', password: ''});
+          this.router.navigateByUrl('/tasks-list');
+        }
+        else {
+
+          for ( let error of data.errors) {
+            this.errors.push(error.msg);
+          }
+        }
+      });
   }
+
 }

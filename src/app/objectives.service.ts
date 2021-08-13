@@ -11,8 +11,8 @@ export class ObjectivesService {
 
   listOfTasks : Array<Objective> = [];
   taskDetails !: Objective;
-  loggedUser!: User;
-  acces!: boolean;
+  loggedUserId!: string;
+  acces: boolean = false;
 
   constructor( private http: HttpClient ) {
   }
@@ -66,21 +66,21 @@ export class ObjectivesService {
     return this.taskDetails;
   }
 
-  setState(response : string){
-    if (response === 'noUser') {
-      this.acces = false;
-      return 'noUser';
-    }
-    if (response === 'noPass') {
-      this.acces = false;
-      return 'noPass';
-    }
+  setStateFalse(): void {
+    this.acces = false;
+  } 
+
+  setState(response : string): void{
     this.acces = true;
-    return '';
+    this.loggedUserId = response;
   }
 
   getState(): boolean {
     return this.acces;
+  }
+
+  getUserId(): string {
+    return this.loggedUserId;
   }
 }
 

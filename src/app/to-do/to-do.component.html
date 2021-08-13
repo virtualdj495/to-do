@@ -5,7 +5,7 @@
   <table mat-table matSort  [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" routerLink="/tasks-list/{{task.id}}" *matCellDef="let task"> {{task.name}} </td>
+      <td mat-cell [ngStyle]="{'background-color': addColor(task)}" (click)="showDetails(task.id)" *matCellDef="let task"> {{task.name}} </td>
     </ng-container>
     <ng-container matColumnDef="date">
       <th mat-header-cell mat-sort-header *matHeaderCellDef> Date </th>

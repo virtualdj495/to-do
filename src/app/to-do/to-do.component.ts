@@ -9,6 +9,10 @@ import { ObjectivesService } from '../objectives.service';
 import { findIndex } from 'lodash';
 import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
 import { HttpClient } from '@angular/common/http';
+import { catchError} from 'rxjs/operators';
+import { of } from 'rxjs';
+import { MyGuard } from '../my.guard';
+import { Router} from '@angular/router';
 
 @Component({
   selector: 'app-to-do',
@@ -19,7 +23,7 @@ export class ToDoComponent implements OnInit {
 
   listOfTasks: Array<Objective> = [];
   currentTask !: Objective;
-  loggedUser !: number;
+  loggedUser !: string;
   dataSource = new MatTableDataSource(this.listOfTasks);
   displayedColumns: string[] = ['name' , 'date', 'edit' , 'checkbox' ,'delete'];
 
@@ -28,16 +32,20 @@ export class ToDoComponent implements OnInit {
   constructor(
     private objectivesService: ObjectivesService,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private guard : MyGuard,
+    private router: Router
     ) { }
 
   ngOnInit(): void {
-    this.http.get(`http://localhost:3000/loggedUser`).subscribe(data =>{
-      this.loggedUser = <number> data;
-      this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
-
-    });
-    this.http.get(`http://localhost:3000`).subscribe((data: any) =>{
+    this.loggedUser = this.objectivesService.getUserId();
+    this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
+    this.http.get(`http://localhost:3000/${this.loggedUser}`).pipe(catchError(error =>{
+      window.alert(error.message);
+      this.objectivesService.setStateFalse();
+      this.guard.forbbidenAcces();
+      return of([]);
+    })).subscribe((data: any) =>{
       for (let task of <Array<Objective>>data) {
         this.listOfTasks.push(task);
       }
@@ -167,4 +175,9 @@ export class ToDoComponent implements OnInit {
   sendDataToServer(sendTask: Objective) {
     this.http.post(`http://localhost:3000`,sendTask).subscribe();
   }
+
+  showDetails(id: number): void {
+    this.router.navigateByUrl(`/tasks-list/${id}`);
+  }
 }
+

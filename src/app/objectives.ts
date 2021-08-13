@@ -1,5 +1,5 @@
 export interface Objective {
-  userId: number;
+  userId: string;
   id: number;
   name: string;
   task: string;
@@ -9,7 +9,7 @@ export interface Objective {
 };
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   password: string;
 

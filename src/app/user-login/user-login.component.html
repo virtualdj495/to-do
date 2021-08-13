@@ -12,9 +12,9 @@
     <br>
     <button style="margin-right: 20px;"  [disabled]="!userDetails.valid" (click)="onLogin()" mat-raised-button>Login</button>
     <button [disabled]="!userDetails.valid" (click)="onRegister()" mat-raised-button>Register</button>
+    <ul style="list-style-type:none;">
+      <li *ngFor="let error of errors">{{error}}</li>
+    </ul>
   </form>
-  <br>
-  <p *ngIf="errorMessage === 'noUser'">Username not found!</p>
-  <p *ngIf="errorMessage === 'noPass'">Wrong password!</p>
-  <p *ngIf="errorMessage === 'exist'">Username already exists</p>
+
 </div>

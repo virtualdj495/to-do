@@ -20,6 +20,7 @@ export class TaskDetailsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log('click');
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.currentTask = this.objectiveService.getTask(id);
   }
