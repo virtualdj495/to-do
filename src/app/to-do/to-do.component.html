@@ -2,6 +2,9 @@
   <button (click)="openDialog()" mat-stroked-button>Add task</button>
 </div>
 <div>
+  <button (click)="clearMemory()" mat-stroked-button>Clear local memory</button>
+</div>
+<div>
   <table mat-table matSort  [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>

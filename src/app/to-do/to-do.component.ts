@@ -8,7 +8,6 @@ import { Objective } from '../objectives';
 import { ObjectivesService } from '../objectives.service';
 import { findIndex } from 'lodash';
 import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
-import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-to-do',
@@ -18,8 +17,7 @@ import { HttpClient } from '@angular/common/http';
 export class ToDoComponent implements OnInit {
 
   listOfTasks: Array<Objective> = [];
-  currentTask !: Objective;
-  loggedUser !: number;
+  currentTask : Objective = { id: -2, name: '', task: '', endDate: '', email: '', state: true };
   dataSource = new MatTableDataSource(this.listOfTasks);
   displayedColumns: string[] = ['name' , 'date', 'edit' , 'checkbox' ,'delete'];
 
@@ -27,31 +25,24 @@ export class ToDoComponent implements OnInit {
 
   constructor(
     private objectivesService: ObjectivesService,
-    private dialog: MatDialog,
-    private http: HttpClient
+    private dialog: MatDialog
     ) { }
 
   ngOnInit(): void {
-    this.http.get(`http://localhost:3000/loggedUser`).subscribe(data =>{
-      this.loggedUser = <number> data;
-      this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
 
-    });
-    this.http.get(`http://localhost:3000`).subscribe((data: any) =>{
-      for (let task of <Array<Objective>>data) {
-        this.listOfTasks.push(task);
+    if (String(localStorage.getItem('list')) !== 'null'){
+      this.listOfTasks = JSON.parse(String(localStorage.getItem('list')));
+      this.listOfTasks = [...this.listOfTasks];
+    }
+    this.dataSource = new MatTableDataSource(this.listOfTasks);
+    this.dataSource.sortingDataAccessor = (item, property) => {
+      switch(property) {
+        case 'date': return item.endDate;
+        default: return property;
       }
-      this.objectivesService.setList(this.listOfTasks)
-      this.dataSource = new MatTableDataSource(this.listOfTasks);
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        switch(property) {
-          case 'date': return item.endDate;
-          default: return property;
-        }
-      };
-      this.dataSource.sort = this.sort;
-    });
-
+    };
+    this.dataSource.sort = this.sort;
+    localStorage.setItem('list',JSON.stringify(this.listOfTasks));
   }
 
   ngAfterViewInit (){
@@ -87,14 +78,15 @@ export class ToDoComponent implements OnInit {
 
   addTask(): void {
     if (findIndex(this.listOfTasks, task => task.id === this.currentTask.id) !== -1) {
-      this.currentTask.endDate =moment(this.currentTask.endDate, "YYYY-MM-DD h:mm:ss").format("YYYY-MM-DD h:mm:ss").toString();
       this.listOfTasks.splice(this.currentTask.id,1,this.currentTask);
+      this.currentTask.endDate =moment(this.currentTask.endDate, "YYYY-MM-DD h:mm:ss").format("YYYY-MM-DD h:mm:ss").toString();
+      localStorage.setItem('list',JSON.stringify(this.listOfTasks));
     }
     else {
-      this.currentTask = this.objectivesService.addTasktoList(this.currentTask);
-      this.listOfTasks.push(this.currentTask );
+      this.objectivesService.addTasktoList(this.currentTask);
     }
-    this.listOfTasks = [... this.listOfTasks];
+    this.listOfTasks = this.objectivesService.getList();
+    this.listOfTasks = [...this.listOfTasks];
     this.dataSource = new MatTableDataSource(this.listOfTasks);
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch(property) {
@@ -103,15 +95,13 @@ export class ToDoComponent implements OnInit {
       }
     };
     this.dataSource.sort = this.sort;
-    this.sendDataToServer(this.currentTask);
-    this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
-
+    this.currentTask = { id: -2, name: '', task: '', endDate: '', email: '', state: true };
   }
 
   switchTask(task: Objective): void {
 
-    task = this.objectivesService.switchState(task);
-    this.listOfTasks = this.objectivesService.getList()
+    this.objectivesService.switchState(task);
+    this.listOfTasks = JSON.parse(String(localStorage.getItem('list')));
     this.dataSource = new MatTableDataSource(this.listOfTasks);
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch(property) {
@@ -120,7 +110,12 @@ export class ToDoComponent implements OnInit {
       }
     };
     this.dataSource.sort = this.sort;
-    this.sendDataToServer(task);
+  }
+
+  clearMemory(){
+    localStorage.clear();
+    this.listOfTasks= JSON.parse(String(localStorage.getItem('list')));
+    this.objectivesService.clearMemory();
   }
 
   addColor(task: Objective): string {
@@ -156,15 +151,12 @@ export class ToDoComponent implements OnInit {
       }
     };
     this.dataSource.sort = this.sort;
-    this.sendDataToServer(task);
+    localStorage.setItem('list',JSON.stringify(this.listOfTasks));
   }
 
   editTask( id: number): void {
     this.currentTask =this.objectivesService.getTask(id);
     this.openDialog();
-  }
 
-  sendDataToServer(sendTask: Objective) {
-    this.http.post(`http://localhost:3000`,sendTask).subscribe();
   }
 }

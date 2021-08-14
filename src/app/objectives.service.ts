@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Objective, User } from './objectives';
-import {HttpClient} from '@angular/common/http';
+import { Objective } from './objectives';
 
 import {findIndex , find} from 'lodash';
 import * as moment from 'moment';
@@ -11,15 +10,14 @@ export class ObjectivesService {
 
   listOfTasks : Array<Objective> = [];
   taskDetails !: Objective;
-  loggedUser!: User;
-  acces!: boolean;
 
-  constructor( private http: HttpClient ) {
+  constructor() {
+
   }
 
-  addTasktoList(task: Objective): Objective {
-    if (this.listOfTasks.length !== null){
-
+  addTasktoList(task: Objective): void {
+    if (localStorage.getItem('list') !== '[]'){
+      this.listOfTasks = JSON.parse(String(localStorage.getItem('list')));
       task.id = this.listOfTasks.length;
     }
     else {
@@ -28,21 +26,16 @@ export class ObjectivesService {
     task.endDate =moment(task.endDate, "YYYY-MM-DD h:mm:ss").format("YYYY-MM-DD h:mm:ss").toString();
     task.state = true;
     this.listOfTasks.push(task);
-    return task;
+    localStorage.setItem('list',JSON.stringify(this.listOfTasks));
+
   }
 
   getList(): Array<Objective> {
     return this.listOfTasks;
   }
 
-  setList(passedList : Array<Objective>): void {
-    this.listOfTasks=[];
-    for (let task of passedList) {
-      this.listOfTasks.push(task);
-    }
-  }
-
-  switchState(task: Objective): Objective {
+  switchState(task: Objective): void {
+    this.listOfTasks = JSON.parse(String(localStorage.getItem('list')));
     let aux =findIndex(this.listOfTasks, task);
 
     if(this.listOfTasks[aux].state === true){
@@ -58,29 +51,17 @@ export class ObjectivesService {
       this.listOfTasks.splice(aux + 1 , 1);
     }
     this.listOfTasks = [... this.listOfTasks];
-    return task;
+    localStorage.setItem('list',JSON.stringify(this.listOfTasks));
+  }
+
+  clearMemory(): void {
+      this.listOfTasks =[];
   }
 
   getTask( id: number): Objective {
+    this.listOfTasks = JSON.parse(String(localStorage.getItem('list')));
     this.taskDetails = <Objective>find(this.listOfTasks, obj => obj.id === id);
     return this.taskDetails;
-  }
-
-  setState(response : string){
-    if (response === 'noUser') {
-      this.acces = false;
-      return 'noUser';
-    }
-    if (response === 'noPass') {
-      this.acces = false;
-      return 'noPass';
-    }
-    this.acces = true;
-    return '';
-  }
-
-  getState(): boolean {
-    return this.acces;
   }
 }
 
