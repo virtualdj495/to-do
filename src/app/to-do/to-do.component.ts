@@ -38,7 +38,7 @@ export class ToDoComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.loggedUser = this.objectivesService.getUserId();
+    this.loggedUser =<string> localStorage.getItem('token');
     this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
     this.http.get(`http://localhost:3000/${this.loggedUser}`).pipe(catchError(error =>{
       window.alert(error.message);
@@ -178,6 +178,11 @@ export class ToDoComponent implements OnInit {
 
   showDetails(id: number): void {
     this.router.navigateByUrl(`/tasks-list/${id}`);
+  }
+
+  logOut(): void {
+    localStorage.removeItem('token');
+    this.router.navigateByUrl(`/login`);
   }
 }
 

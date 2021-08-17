@@ -1,5 +1,12 @@
 <div>
-  <button (click)="openDialog()" mat-stroked-button>Add task</button>
+  <span>
+    <button (click)="logOut()" mat-raised-button>Log out</button>
+    <div></div>
+    <button (click)="openDialog()" mat-stroked-button>Add task</button>
+  </span>
+  <span>
+
+  </span>
 </div>
 <div>
   <table mat-table matSort  [dataSource]="dataSource">

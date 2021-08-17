@@ -20,10 +20,9 @@ div {
 
 span {
   text-align: center;
-  vertical-align: text-top;
   display: inline-block;
-  width:45%;
-  border: 2px solid black;
+  width:30%;
+  height: 20%;
 }
 table {
   width: 100%;

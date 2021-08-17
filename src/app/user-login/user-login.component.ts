@@ -4,6 +4,9 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { User } from '../objectives';
 import { ObjectivesService } from '../objectives.service';
+import { catchError} from 'rxjs/operators';
+import { of } from 'rxjs';
+import { MyGuard } from '../my.guard';
 
 @Component({
   selector: 'app-user-login',
@@ -19,7 +22,7 @@ export class UserLoginComponent implements OnInit {
     private fb: FormBuilder,
     private http: HttpClient,
     private router: Router,
-    private services: ObjectivesService
+    private services: ObjectivesService,
   ) { }
 
   userDetails = this.fb.group({
@@ -28,6 +31,9 @@ export class UserLoginComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (localStorage.getItem('token') !== undefined) {
+      this.router.navigateByUrl('/tasks-list');
+    }
   }
 
   onRegister(): void {
@@ -54,7 +60,8 @@ export class UserLoginComponent implements OnInit {
       (data: any) => {
         this.errors = [];
         if(typeof data == 'string') {
-          this.services.setState(<string> data);
+          localStorage.setItem('token', <string> data);
+          this.services.setState();
           this.userDetails.setValue({username: '', password: ''});
           this.router.navigateByUrl('/tasks-list');
         }
