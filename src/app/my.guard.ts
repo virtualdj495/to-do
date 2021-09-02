@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot} from '@angular/router';
 import { ObjectivesService } from './objectives.service';
 
 @Injectable({
@@ -34,6 +34,7 @@ export class MyGuard implements CanActivate {
   }
 
 }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,6 +48,33 @@ export class Forbbiden implements CanActivate {
   }
 
   canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): boolean {
+
+      if (localStorage.getItem('token') !== null) {
+        return true;
+      }
+      if (this.services.getState() === false) {
+        this.router.navigateByUrl('/login');
+      }
+      return this.services.getState();
+  }
+
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ActivateChild implements CanActivateChild {
+
+  constructor(
+    private services: ObjectivesService,
+    private router: Router
+  ) {
+
+  }
+
+  canActivateChild(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): boolean {
 

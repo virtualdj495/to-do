@@ -13,7 +13,7 @@ import {MatTableModule} from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import {MatDialogModule} from '@angular/material/dialog';
 import { MatStepperModule} from '@angular/material/stepper';
-
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 const MaterialComponents = [
   MatCardModule,
   MatFormFieldModule,
@@ -27,7 +27,8 @@ const MaterialComponents = [
   MatTableModule,
   MatSortModule,
   MatDialogModule,
-  MatStepperModule
+  MatStepperModule,
+  MatProgressSpinnerModule
 ]
 
 @NgModule({

@@ -8,6 +8,7 @@ import { Objective } from '../objectives';
 import { ObjectivesService } from '../objectives.service';
 import { findIndex } from 'lodash';
 import { DialogBoxComponent } from '../dialog-box/dialog-box.component';
+import { LoadingDialogComponent } from '../loading-dialog/loading-dialog.component';
 import { HttpClient } from '@angular/common/http';
 import { catchError} from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -38,32 +39,42 @@ export class ToDoComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.loggedUser =<string> localStorage.getItem('token');
-    this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
-    this.http.get(`http://localhost:3000/${this.loggedUser}`).pipe(catchError(error =>{
-      window.alert(error.message);
-      this.objectivesService.setStateFalse();
-      this.guard.forbbidenAcces();
-      return of([]);
-    })).subscribe((data: any) =>{
-      for (let task of <Array<Objective>>data) {
-        this.listOfTasks.push(task);
-      }
-      this.objectivesService.setList(this.listOfTasks)
-      this.dataSource = new MatTableDataSource(this.listOfTasks);
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        switch(property) {
-          case 'date': return item.endDate;
-          default: return property;
-        }
-      };
-      this.dataSource.sort = this.sort;
-    });
-
+    this.openWaitingDialog();
   }
 
   ngAfterViewInit (){
     this.dataSource.sort = this.sort;
+  }
+
+  openWaitingDialog() {
+    const dialogRef = this.dialog.open(LoadingDialogComponent, { data: {}});
+    dialogRef.afterOpened().subscribe(_ => {
+      this.loggedUser =<string> localStorage.getItem('token');
+      this.currentTask = {userId: this.loggedUser, id: -2, name: '', task: '', endDate: '', email: '', state: true };
+      this.http.get(`http://localhost:3000/${this.loggedUser}`).pipe(catchError(error =>{
+        dialogRef.close();
+        localStorage.removeItem('token');
+        window.alert(error.message);
+        this.objectivesService.setStateFalse();
+        this.guard.forbbidenAcces();
+        return of([]);
+      })).subscribe((data: any) =>{
+        dialogRef.close();  
+        for (let task of <Array<Objective>>data) {
+          this.listOfTasks.push(task);
+        }
+        this.objectivesService.setList(this.listOfTasks)
+        this.dataSource = new MatTableDataSource(this.listOfTasks);
+        this.dataSource.sortingDataAccessor = (item, property) => {
+          switch(property) {
+            case 'date': return item.endDate;
+            default: return property;
+          }
+        };
+        this.dataSource.sort = this.sort;
+      });
+    })
+    
   }
 
   openDialog() {
@@ -174,10 +185,6 @@ export class ToDoComponent implements OnInit {
 
   sendDataToServer(sendTask: Objective) {
     this.http.post(`http://localhost:3000`,sendTask).subscribe();
-  }
-
-  showDetails(id: number): void {
-    this.router.navigateByUrl(`/tasks-list/${id}`);
   }
 
   logOut(): void {

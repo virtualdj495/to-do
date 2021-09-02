@@ -11,6 +11,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { TaskDetailsComponent } from './task-details/task-details.component';
 import { DialogBoxComponent } from './dialog-box/dialog-box.component';
 import { UserLoginComponent } from './user-login/user-login.component';
+import { LoadingDialogComponent } from './loading-dialog/loading-dialog.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { UserLoginComponent } from './user-login/user-login.component';
     ToDoComponent,
     TaskDetailsComponent,
     DialogBoxComponent,
-    UserLoginComponent
+    UserLoginComponent,
+    LoadingDialogComponent
   ],
   imports: [
     BrowserModule,

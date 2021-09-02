@@ -31,7 +31,8 @@ export class UserLoginComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    if (localStorage.getItem('token') !== undefined) {
+    if (localStorage.getItem('token') !== null) {
+      console.log(localStorage.getItem('token'));
       this.router.navigateByUrl('/tasks-list');
     }
   }
